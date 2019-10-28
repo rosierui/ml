@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt # Dataset visualization.
 import numpy as np              # Low-level numerical Python library.
 import pandas as pd             # Higher-level numerical Python library.
 
+from tensorflow.python.framework.ops import Tensor, Graph
+
 
 # Create a graph.
 g = tf.Graph()
@@ -23,12 +25,12 @@ with g.as_default():
 
   # Now create a session.
   # The session will run the default graph.
-  with tf.Session() as sess:
+  with tf.Session as sess:
     print(my_sum.eval())
 
   z = tf.constant(4, name="z_const")
   new_sum = tf.add(my_sum, z, name="x_y_z_sum")
 
-  with tf.Session() as sess:
+  with tf.Session as sess:
     print(new_sum.eval())
   

@@ -3,6 +3,9 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
+from tensorflow.python.framework.ops import Tensor, Graph
+
+tn : Tensor = None
 
 print(tf.add(1, 2))
 print(tf.add([1, 2], [3, 4]))
@@ -32,4 +35,5 @@ print(np.add(tensor, 1))
 print("The .numpy() method explicitly converts a Tensor to a numpy array")
 print(tensor.numpy())  # AttributeError: 'Tensor' object has no attribute 'numpy'
 
+print("end")
 
