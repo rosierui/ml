@@ -11,7 +11,7 @@ import PIL.Image
 from io import BytesIO
 from IPython.display import clear_output, Image, display
 
-from tensorflow.python.framework.ops import Tensor, Graph
+from tensorflow_core.python.framework.ops import Tensor, Graph
 
 def DisplayFractal(a, fmt='jpeg'):
   """Display an array of iteration counts as a

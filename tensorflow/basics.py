@@ -3,7 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
-from tensorflow.python.framework.ops import Tensor, Graph
+from tensorflow_core.python.framework.ops import Tensor, Graph
 
 tn : Tensor = None
 

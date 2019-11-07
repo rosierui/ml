@@ -5,10 +5,11 @@ from __future__ import print_function
 import tensorflow as tf
 import matplotlib.pyplot as plt # Dataset visualization.
 import numpy as np              # Low-level numerical Python library.
-import pandas as pd             # Higher-level numerical Python library.
+import pandas as pd            # Higher-level numerical Python library.
 
-from tensorflow.python.framework.ops import Tensor, Graph
+from tensorflow_core.python.framework.ops import Tensor, Graph
 
+print(tf.__version__)
 
 # Create a graph.
 g = tf.Graph()
