@@ -25,6 +25,8 @@ layer.variables
 # The variables are also accessible through nice accessors
 layer.kernel, layer.bias
 
+# Implementing custom layers
+
 class MyDenseLayer(tf.keras.layers.Layer):
   def __init__(self, num_outputs):
     super(MyDenseLayer, self).__init__()
@@ -47,6 +49,7 @@ _ = layer(tf.zeros([10, 5])) # Calling the layer `.builds` it.
 
 print([var.name for var in layer.trainable_variables])
 
+# Models: Composing layers
 class ResnetIdentityBlock(tf.keras.Model):
   def __init__(self, kernel_size, filters):
     super(ResnetIdentityBlock, self).__init__(name='')
@@ -86,3 +89,20 @@ block.layers
 len(block.variables)
 
 block.summary()
+
+# Much of the time, however, models which compose many layers simply call one layer after the other. 
+# This can be done in very little code using tf.keras.Sequential:
+
+my_seq = tf.keras.Sequential([tf.keras.layers.Conv2D(1, (1, 1),
+                                                    input_shape=(
+                                                        None, None, 3)),
+                             tf.keras.layers.BatchNormalization(),
+                             tf.keras.layers.Conv2D(2, 1,
+                                                    padding='same'),
+                             tf.keras.layers.BatchNormalization(),
+                             tf.keras.layers.Conv2D(3, (1, 1)),
+                             tf.keras.layers.BatchNormalization()])
+my_seq(tf.zeros([1, 2, 3, 3]))
+
+my_seq.summary()
+
