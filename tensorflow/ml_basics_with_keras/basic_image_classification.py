@@ -46,12 +46,18 @@ plt.figure()
 plt.imshow(train_images[0])
 plt.colorbar()
 plt.grid(False)
+plt.xlabel(class_names[train_labels[0]])
+plt.ylabel(train_labels[0])
 plt.show()
 
 plt.figure()
 plt.imshow(train_images[1])
-plt.colorbar()
+#plt.colorbar()
 plt.grid(True)
+plt.xticks([])
+plt.yticks([])
+plt.xlabel(class_names[train_labels[1]])
+plt.ylabel(train_labels[1])
 plt.show()
 
 """
@@ -79,12 +85,11 @@ plt.show()
 """
 Build the model
 Building the neural network requires configuring the layers of the model, then compiling the model.
-Set up the layers
 """
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation='relu'),
-    keras.layers.Dense(10, activation='softmax')    # 0 ~ 9
+    keras.layers.Dense(128, activation='relu'),  # Rectified Linear Units (ReLU)
+    keras.layers.Dense(10, activation='softmax')   # 0 ~ 9
 ])
 """
 The first layer in this network, tf.keras.layers.Flatten, transforms the format of the images from a 
@@ -96,17 +101,28 @@ These are densely connected, or fully connected, neural layers. The first Dense 
 (or neurons). The second (and last) layer is a 10-node softmax layer that returns an array of 10 
 probability scores that sum to 1. Each node contains a score that indicates the probability that 
 the current image belongs to one of the 10 classes.
-"""
 
-"""
+Softmax function calculates the probabilities distribution of the event over 'n' different events. 
+In general way of saying, this function will calculate the probabilities of each target class over 
+all possible target classes
+
 Compile the model
 Before the model is ready for training, it needs a few more settings. These are added during the model's compile step:
 
-Loss function —This measures how accurate the model is during training. You want to minimize this function to "steer" the model in the right direction.
-Optimizer —This is how the model is updated based on the data it sees and its loss function.
-Metrics —Used to monitor the training and testing steps. The following example uses accuracy, the fraction of the images that are correctly classified.
+Loss function — This measures how accurate the model is during training. You want to minimize this function to "steer" the model in the right direction.
+Optimizer — This is how the model is updated based on the data it sees and its loss function.
+Metrics — Used to monitor the training and testing steps. The following example uses accuracy, the fraction of the images that are correctly classified.
+
+https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/
+The Adam optimization algorithm is an extension to stochastic gradient descent
+
+https://machinelearningmastery.com/loss-and-loss-functions-for-training-deep-learning-neural-networks/
+In the context of an optimization algorithm, the function used to evaluate a candidate solution (i.e. a set of weights) is referred to as the objective function.
+We may seek to maximize or minimize the objective function, meaning that we are searching for a candidate solution that has the highest or lowest score respectively.
+Typically, with neural networks, we seek to minimize the error. As such, the objective function is often referred to as a cost function or a loss function 
+and the value calculated by the loss function is referred to as simply “loss.”
 """
-model.compile(optimizer='adam',
+model.compile(optimizer='adam', 
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
