@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# https://towardsdatascience.com/how-to-build-a-simple-neural-network-from-scratch-with-python-9f011896d2f3
 
 __author__ = "Konstantinos Kitsios"
 __version__ = "1.0.1"
@@ -10,6 +9,12 @@ __email__ = "kitsiosk@ece.auth.gr"
 """
     Simple Neural Network with 1 hidden layer with the number
     of hidden units as a hyperparameter to calculate the XOR function
+    
+Cross Entropy Loss function
+    https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html
+
+    In binary classification, where the number of classes M equals 2, cross-entropy can be calculated as:    
+    −(ylog(p) + (1−y)log(1−p))    
 """
 
 import numpy as np
@@ -49,7 +54,7 @@ def forward_prop(X, parameters):
     return A2, cache
 
 def calculate_cost(A2, Y):
-    cost = -np.sum(np.multiply(Y, np.log(A2)) +  np.multiply(1-Y, np.log(1-A2)))/m
+    cost = -np.sum(np.multiply(Y, np.log(A2)) +  np.multiply(1-Y, np.log(1-A2)))/m  # m = 4
     cost = np.squeeze(cost)
 
     return cost
@@ -101,9 +106,11 @@ def update_parameters(parameters, grads, learning_rate):
 
     return new_parameters
 
-
+count = 0
 def model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate):
+    global count
     parameters = initialize_parameters(n_x, n_h, n_y)
+    print(f"initial parameters: {parameters}")
 
     for i in range(0, num_of_iters+1):
         a2, cache = forward_prop(X, parameters)
@@ -113,6 +120,10 @@ def model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate):
         grads = backward_prop(X, Y, cache, parameters)
 
         parameters = update_parameters(parameters, grads, learning_rate)
+        
+        #print(f"{count} - a2: {a2}, cost: {cost}, grads: {grads}, parameters: {parameters}")
+        print("%4d - a2: %s, cost: %f" % (count, str(a2), cost))
+        count += 1
 
         if(i%100 == 0):
             print('Cost after iteration# {:d}: {:f}'.format(i, cost))
@@ -155,6 +166,7 @@ num_of_iters = 1000
 learning_rate = 0.3
 
 trained_parameters = model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate)
+print(f"trained_parameters: {trained_parameters}")
 
 y_predict = predict(X_test, trained_parameters)
 
