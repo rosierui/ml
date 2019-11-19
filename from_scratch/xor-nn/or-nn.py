@@ -1,21 +1,11 @@
 # https://towardsdatascience.com/how-to-build-a-simple-neural-network-from-scratch-with-python-9f011896d2f3
+# https://github.com/kitsiosk/xor-neural-net
 
 __author__ = "Konstantinos Kitsios"
 __version__ = "1.0.1"
 __maintainer__ = "Konstantinos Kitsios"
 __email__ = "kitsiosk@ece.auth.gr"
 
-
-"""
-    Simple Neural Network with 1 hidden layer with the number
-    of hidden units as a hyperparameter to calculate the XOR function
-    
-Cross Entropy Loss function
-    https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html
-
-    In binary classification, where the number of classes M equals 2, cross-entropy can be calculated as:    
-    −(ylog(p) + (1−y)log(1−p))    
-"""
 
 import numpy as np
 
@@ -47,12 +37,19 @@ def forward_prop(X, parameters):
     Z2 = np.dot(W2, A1) + b2
     A2 = sigmoid(Z2)
 
-    cache = {
+    forward_outputs = {
         "A1": A1,
         "A2": A2
     }
-    return A2, cache
+    return A2, forward_outputs
 
+"""    
+Cross Entropy Loss function
+    https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html
+
+    In binary classification, where the number of classes M equals 2, cross-entropy can be calculated as:    
+    −(ylog(p) + (1−y)log(1−p))    
+"""
 def calculate_cost(A2, Y):
     cost = -np.sum(np.multiply(Y, np.log(A2)) +  np.multiply(1-Y, np.log(1-A2)))/m  # m = 4
     cost = np.squeeze(cost)
@@ -107,17 +104,20 @@ def update_parameters(parameters, grads, learning_rate):
     return new_parameters
 
 count = 0
+init_parameters = None
 def model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate):
-    global count
+    global count, init_parameters
     parameters = initialize_parameters(n_x, n_h, n_y)
+    init_parameters = parameters 
+
     print(f"initial parameters: {parameters}")
 
     for i in range(0, num_of_iters+1):
-        a2, cache = forward_prop(X, parameters)
+        a2, forward_outputs = forward_prop(X, parameters)
 
         cost = calculate_cost(a2, Y)
 
-        grads = backward_prop(X, Y, cache, parameters)
+        grads = backward_prop(X, Y, forward_outputs, parameters)
 
         parameters = update_parameters(parameters, grads, learning_rate)
         
@@ -125,7 +125,7 @@ def model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate):
         print("%4d - a2: %s, cost: %f" % (count, str(a2), cost))
         count += 1
 
-        if(i%100 == 0):
+        if i >= 100 and i % 100 == 0:
             print('Cost after iteration# {:d}: {:f}'.format(i, cost))
 
     return parameters
@@ -146,17 +146,15 @@ def predict(X, parameters):
 np.random.seed(2)
 
 #The 4 training examples by columns
-X = np.array([[0, 0, 1, 1], [0, 1, 0, 1]])
+X = np.array([[0, 0, 1, 1], 
+              [0, 1, 0, 1]])
 
 #The outputs of the XOR for every example in X
-Y = np.array([[0, 1, 1, 0]])
+Y = np.array([[0, 1, 1, 1]])
 
 #No. of training examples
 m = X.shape[1]
 
-#Test 2X1 vector to calculate the XOR of its elements. 
-#Try (0, 0), (0, 1), (1, 0), (1, 1)
-X_test = np.array([[1], [1]])
 
 #Set the hyperparameters
 n_x = 2     #No. of neurons in first layer
@@ -165,10 +163,29 @@ n_y = 1     #No. of neurons in output layer
 num_of_iters = 1000
 learning_rate = 0.3
 
+
 trained_parameters = model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate)
-print(f"trained_parameters: {trained_parameters}")
 
-y_predict = predict(X_test, trained_parameters)
+X_test_ar = []
+X_test_ar.append(np.array([[0], [0]]))
+X_test_ar.append(np.array([[0], [1]]))
+X_test_ar.append(np.array([[1], [0]]))
+X_test_ar.append(np.array([[1], [1]]))
 
-print('Neural Network prediction for example ({:d}, {:d}) is {:d}'.format(
-    X_test[0][0], X_test[1][0], y_predict))
+print("\n__OR__")
+
+print("\nPrediction using initial random parameters:")
+print(f"initial parameters: {init_parameters}")
+for X_test in X_test_ar:
+    y_predict = predict(X_test, init_parameters)
+
+    print('Prediction for example ({:d}, {:d}) is {:d}'.format(
+        X_test[0][0], X_test[1][0], y_predict))
+
+print("\nPrediction using trained parameters:")
+print(f"trained parameters: {trained_parameters}")
+for X_test in X_test_ar:
+    y_predict = predict(X_test, trained_parameters)
+
+    print('Prediction for example ({:d}, {:d}) is {:d}'.format(
+        X_test[0][0], X_test[1][0], y_predict))
