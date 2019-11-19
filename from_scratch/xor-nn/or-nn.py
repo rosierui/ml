@@ -115,7 +115,7 @@ def model(X, Y, n_x, n_h, n_y, num_of_iters, learning_rate):
     for i in range(0, num_of_iters+1):
         a2, forward_outputs = forward_prop(X, parameters)
 
-        cost = calculate_cost(a2, Y)
+        cost = calculate_cost(a2, Y)  # network works properly w/o calling this function 
 
         grads = backward_prop(X, Y, forward_outputs, parameters)
 
