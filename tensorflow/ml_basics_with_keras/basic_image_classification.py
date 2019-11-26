@@ -127,6 +127,12 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train the model
+"""
+https://stats.stackexchange.com/questions/153531/what-is-batch-size-in-neural-network
+batch size = the number of training examples in one forward/backward pass. number of iterations = number of passes, 
+each pass using [batch size] number of examples. To be clear, one pass = one forward pass + one backward pass (we 
+do not count the forward pass and backward pass as two different passes).
+"""
 model.fit(train_images, train_labels, epochs=10)
 
 """
