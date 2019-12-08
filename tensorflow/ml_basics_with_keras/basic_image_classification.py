@@ -1,4 +1,9 @@
 # https://www.tensorflow.org/tutorials/keras/classification
+# Computer Vision Example: https://goo.gle/34cHkDk
+# https://www.youtube.com/watch?v=bemDFpNooA8&vl=en ML Zero to Hero, part 2
+
+# https://codelabs.developers.google.com/codelabs/tensorflow-lab2-computervision/#0 *
+# https://colab.research.google.com/github/lmoroney/mlday-tokyo/blob/master/Lab2-Computer-Vision.ipynb#scrollTo=6tki-Aro_Uax 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 # TensorFlow and tf.keras
@@ -15,23 +20,33 @@ print("Import the Fashion MNIST dataset")
 # beginner.py - mnist = tf.keras.datasets.mnist
 fashion_mnist = keras.datasets.fashion_mnist
 
-(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+(training_images, training_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
 
 print("Explore the data")
-print(f"train_images.shape: {train_images.shape}")
-print(f"len(train_labels): {len(train_labels)}")
+print(f"training_images.shape: {training_images.shape}")
+print(f"len(training_labels): {len(training_labels)}")
 
 # Each label is an integer between 0 and 9:
-print(f"train_labels: {train_labels}")
+print(f"training_labels: {training_labels}")
 
 # There are 10,000 images in the test set. Again, each image is represented as 28 x 28 pixels:
 print(f"test_images.shape : {test_images.shape}")
 print(f"len(test_labels) : {len(test_labels)}")
 print(f"test_labels: {test_labels}")
+
+
+print("\n1 - plt.imshow(training_images[0])")
+plt.imshow(training_images[0])
+
+print("\n2 - training_images[0]")
+print(training_images[0])
+
+print("\n3 - training_labels[0]")
+print(training_labels[0])
 
 """
 Preprocess the data
@@ -43,21 +58,21 @@ The imshow function displays the value low (and any value less than low ) as bla
 using the default number of gray levels
 """
 plt.figure()
-plt.imshow(train_images[0])
+plt.imshow(training_images[0])
 plt.colorbar()
 plt.grid(False)
-plt.xlabel(class_names[train_labels[0]])
-plt.ylabel(train_labels[0])
+plt.xlabel(class_names[training_labels[0]])
+plt.ylabel(training_labels[0])
 plt.show()
 
 plt.figure()
-plt.imshow(train_images[1])
+plt.imshow(training_images[1])
 #plt.colorbar()
 plt.grid(True)
 plt.xticks([])
 plt.yticks([])
-plt.xlabel(class_names[train_labels[1]])
-plt.ylabel(train_labels[1])
+plt.xlabel(class_names[training_labels[1]])
+plt.ylabel(training_labels[1])
 plt.show()
 
 """
@@ -65,7 +80,7 @@ Scale these values to a range of 0 to 1 before feeding them to the neural networ
 To do so, divide the values by 255. It's important that the training set and the testing set be preprocessed in the same way:
 """
 
-train_images = train_images / 255.0
+training_images = training_images / 255.0
 test_images = test_images / 255.0
 
 """
@@ -78,51 +93,22 @@ for i in range(25):
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
-    plt.imshow(train_images[i], cmap=plt.cm.binary)
-    plt.xlabel(class_names[train_labels[i]])
+    plt.imshow(training_images[i], cmap=plt.cm.binary)
+    plt.xlabel(class_names[training_labels[i]])
 plt.show()
 
-"""
-Build the model
-Building the neural network requires configuring the layers of the model, then compiling the model.
-"""
+# Building the neural network requires configuring the layers of the model, then compiling the model.
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation='relu'),  # Rectified Linear Units (ReLU)
-    keras.layers.Dense(10, activation='softmax')   # 0 ~ 9
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation=tf.nn.relu),  # Rectified Linear Units (ReLU)
+    tf.keras.layers.Dense(10, activation=tf.nn.softmax)   # 0 ~ 9
 ])
+
 """
-The first layer in this network, tf.keras.layers.Flatten, transforms the format of the images from a 
-two-dimensional array (of 28 by 28 pixels) to a one-dimensional array (of 28 * 28 = 784 pixels). 
-Think of this layer as unstacking rows of pixels in the image and lining them up. This layer has 
-no parameters to learn; it only reformats the data.
-After the pixels are flattened, the network consists of a sequence of two tf.keras.layers.Dense layers. 
-These are densely connected, or fully connected, neural layers. The first Dense layer has 128 nodes 
-(or neurons). The second (and last) layer is a 10-node softmax layer that returns an array of 10 
-probability scores that sum to 1. Each node contains a score that indicates the probability that 
-the current image belongs to one of the 10 classes.
-
-Softmax function calculates the probabilities distribution of the event over 'n' different events. 
-In general way of saying, this function will calculate the probabilities of each target class over 
-all possible target classes
-
-Compile the model
-Before the model is ready for training, it needs a few more settings. These are added during the model's compile step:
-
-Loss function — This measures how accurate the model is during training. You want to minimize this function to "steer" the model in the right direction.
-Optimizer — This is how the model is updated based on the data it sees and its loss function.
-Metrics — Used to monitor the training and testing steps. The following example uses accuracy, the fraction of the images that are correctly classified.
-
-https://machinelearningmastery.com/adam-optimization-algorithm-for-deep-learning/
-The Adam optimization algorithm is an extension to stochastic gradient descent
-
-https://machinelearningmastery.com/loss-and-loss-functions-for-training-deep-learning-neural-networks/
-In the context of an optimization algorithm, the function used to evaluate a candidate solution (i.e. a set of weights) is referred to as the objective function.
-We may seek to maximize or minimize the objective function, meaning that we are searching for a candidate solution that has the highest or lowest score respectively.
-Typically, with neural networks, we seek to minimize the error. As such, the objective function is often referred to as a cost function or a loss function 
-and the value calculated by the loss function is referred to as simply “loss.”
+The `metrics=` parameter, this allows TensorFlow to report back about how accurate the training is against the 
+test set. It measures how many it got right and wrong, and reports back on how it's doing.
 """
-model.compile(optimizer='adam', 
+model.compile(optimizer=tf.optimizers.Adam(), # https://www.tensorflow.org/versions/r2.0/api_docs/python/tf/optimizers
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
@@ -133,10 +119,10 @@ batch size = the number of training examples in one forward/backward pass. numbe
 each pass using [batch size] number of examples. To be clear, one pass = one forward pass + one backward pass (we 
 do not count the forward pass and backward pass as two different passes).
 """
-model.fit(train_images, train_labels, epochs=10)
+model.fit(training_images, training_labels, epochs=5)
 
 """
-Evaluate accuracy
+Test the model
 Next, compare how the model performs on the test dataset:
 """
 test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
@@ -148,7 +134,7 @@ print('\nTest accuracy:', test_acc)
 Make predictions
 """
 predictions = model.predict(test_images)
-predictions[0]
+print(predictions[0])
 np.argmax(predictions[0])
 test_labels[0]
 
